@@ -21,6 +21,8 @@ const unsigned int height = 800;
 
 GLfloat rotationX = 0.0f;
 GLfloat rotationY = 0.0f;
+GLfloat distance = -5.0f;
+GLfloat direction = 0.0f;
 
 
 // DRAWING TRIANGLES
@@ -31,13 +33,13 @@ GLfloat vertices[] =
 	  0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,		// Upper right corner
 	  0.5f, 0.0f, 0.5f,	     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,		
 	  0.0f, 0.8f, 0.0f,	     0.92f, 0.86f, 0.76f,	2.5f, 5.0f	*/
-		-0.5f, -0.5f,  0.5f, 		0.83f, 0.70f, 0.44f,	0.0f, 0.0f,  
+		-0.5f, -0.5f,  0.5f, 		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,  
 		 0.5f, -0.5f,  0.5f,		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,		0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
 		 0.5f,  0.5f,  0.5f,		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,		0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
 		 0.5f, -0.5f, -0.5f,		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,		0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,		0.83f, 0.70f, 0.44f,	1.0f, 1.0f,
 		 0.5f,  0.5f, -0.5f,		0.92f, 0.86f, 0.76f,	1.0f, 1.0f
 
 };
@@ -73,6 +75,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	//std::cout << key << std::endl;
 
 	const GLfloat rotationSpeed = 10;
+	const GLfloat dis = 0.5f;
+	const GLfloat dir = 0.5f;
 
 	// actions are GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT
 	if (action == GLFW_PRESS || action == GLFW_REPEAT)
@@ -91,7 +95,22 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		case GLFW_KEY_LEFT:
 			rotationY -= rotationSpeed;
 			break;
+
+		case GLFW_KEY_W:
+			distance += dis;
+			break;
+
+		case GLFW_KEY_S:
+			distance -= dis;
+			break;
+		case GLFW_KEY_A:
+			direction -= dir;
+			break;
+		case GLFW_KEY_D:
+			direction += dir;
+			break;
 		}
+
 
 
 	}
@@ -116,6 +135,8 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+
+	glfwSetKeyCallback(window, keyCallback);
 	//Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 
@@ -166,8 +187,9 @@ int main() {
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 proj = glm::mat4(1.0f);
 
-		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
+		model = glm::rotate(model, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(direction, 0.0f, distance));
 		proj = glm::perspective(glm::radians(45.0f), (float)(width/height), 0.1f, 100.0f);
 		
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
